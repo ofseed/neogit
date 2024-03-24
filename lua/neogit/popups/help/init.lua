@@ -16,15 +16,23 @@ function M.create(env)
     end
   end
 
-  p = p:new_action_group():new_action_group("Applying changes")
-  for _, cmd in ipairs(actions.actions()) do
-    p = p:action(cmd.keys, cmd.name, cmd.fn)
+  if env.buffer == "status" then
+    p = p:new_action_group():new_action_group("Applying changes")
+    for _, cmd in ipairs(actions.actions()) do
+      p = p:action(cmd.keys, cmd.name, cmd.fn)
+    end
+
+    p = p:new_action_group():new_action_group("Essential commands")
+    for _, cmd in ipairs(actions.essential()) do
+      p = p:action(cmd.keys, cmd.name, cmd.fn)
+    end
+  elseif env.buffer == "log" then
+    p = p:new_action_group():new_action_group("Essential commands")
+    for _, cmd in ipairs(actions.essential()) do
+      p = p:action(cmd.keys, cmd.name, cmd.fn)
+    end
   end
 
-  p = p:new_action_group():new_action_group("Essential commands")
-  for _, cmd in ipairs(actions.essential()) do
-    p = p:action(cmd.keys, cmd.name, cmd.fn)
-  end
 
   p = p:build()
   p:show()

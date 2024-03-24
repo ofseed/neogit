@@ -124,8 +124,8 @@ M.essential = function()
         require("neogit.buffers.status").instance:dispatch_refresh(nil, "user_refresh")
       end,
     },
-    { "GoToFile", "Go to file", NONE },
-    { "Toggle", "Toggle", NONE },
+    { "GoToFile", "Goto item at cursor", NONE },
+    { "Toggle", "Toggle section at cursor", NONE },
   }
 end
 

@@ -121,6 +121,38 @@ function M:open()
           }
         end),
         [popups.mapping_for("PullPopup")] = popups.open("pull"),
+        [popups.mapping_for("HelpPopup")] = popups.open("help", function(p)
+          -- Since any other popup can be launched from help, build an ENV for any of them.
+          local commit = self.buffer.ui:get_commit_under_cursor()
+          local commits = { commit }
+
+          p {
+            buffer = "log",
+            branch = { commits = commits },
+            cherry_pick = { commits = commits },
+            commit = { commit = commit },
+            merge = { commit = commit },
+            push = { commit = commit },
+            rebase = { commit = commit },
+            revert = { commits = commits },
+            reset = { commit = commit },
+            tag = { commit = commit },
+            stash = {},
+            diff = {
+              section = { name = "log" },
+              item = { name = commit },
+            },
+            ignore = {
+              paths = {},
+              git_root = require("neogit.lib.git").repo.git_root,
+            },
+            remote = {},
+            fetch = {},
+            pull = {},
+            log = {},
+            worktree = {},
+          }
+        end),
         [status_maps["YankSelected"]] = function()
           local yank = self.buffer.ui:get_commit_under_cursor()
           if yank then

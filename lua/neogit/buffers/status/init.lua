@@ -360,7 +360,42 @@ function M:open(kind)
         [popups.mapping_for("RemotePopup")] = popups.open("remote"),
         [popups.mapping_for("FetchPopup")] = popups.open("fetch"),
         [popups.mapping_for("PullPopup")] = popups.open("pull"),
-        [popups.mapping_for("HelpPopup")] = popups.open("help"),
+        [popups.mapping_for("HelpPopup")] = popups.open("help", function(p)
+          -- Since any other popup can be launched from help, build an ENV for any of them.
+          local paths = self.buffer.ui:get_filepaths_in_selection()
+          local section = self.buffer.ui:get_current_section().options.section
+          local item = self.buffer.ui:get_yankable_under_cursor()
+          local stash = self.buffer.ui:get_yankable_under_cursor()
+          local commits = self.buffer.ui:get_commits_in_selection()
+          local commit = commits[1]
+
+          p {
+            buffer = "status",
+            branch = { commits = commits },
+            cherry_pick = { commits = commits },
+            commit = { commit = commit },
+            merge = { commit = commit },
+            push = { commit = commit },
+            rebase = { commit = commit },
+            revert = { commits = commits },
+            reset = { commit = commit },
+            tag = { commit = commit },
+            stash = { name = stash and stash:match("^stash@{%d+}") },
+            diff = {
+              section = { name = section },
+              item = { name = item },
+            },
+            ignore = {
+              paths = paths,
+              git_root = git.repo.git_root,
+            },
+            remote = {},
+            fetch = {},
+            pull = {},
+            log = {},
+            worktree = {},
+          }
+        end),
         [popups.mapping_for("LogPopup")] = popups.open("log"),
         [popups.mapping_for("WorktreePopup")] = popups.open("worktree"),
       },
@@ -1053,6 +1088,7 @@ function M:open(kind)
           local commits = { commit }
 
           p {
+            buffer = "status",
             branch = { commits = commits },
             cherry_pick = { commits = commits },
             commit = { commit = commit },
